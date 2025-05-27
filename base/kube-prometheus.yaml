@@ -1,23 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kube-prometheus
+  name: kube-prometheus-crds
+  namespace: argocd
 spec:
   project: default
   source:
-    chart: kube-prometheus-stack
-    repoURL: https://prometheus-community.github.io/helm-charts
-    targetRevision: 57.0.3
-    helm:
-      values: |
-        grafana:
-          service:
-            type: LoadBalancer
-        prometheus:
-          service:
-            type: LoadBalancer
+    repoURL: https://github.com/prometheus-community/helm-charts
+    targetRevision: kube-prometheus-stack-57.0.3
+    path: charts/kube-prometheus-stack/crds
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
   syncPolicy:
-    automated: {}
+    automated:
+      selfHeal: true
+      prune: true
